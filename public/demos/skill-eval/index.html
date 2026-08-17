@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>金融数据竞品评测工作台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231268b3'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-size='34' fill='white'%3E%E8%AF%84%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="mark"><i data-lucide="flask-conical" aria-hidden="true"></i></div>
+      <div>
+        <h1>金融数据竞品评测工作台</h1>
+        <p>竞品发现、Query 管理、固定 Runner 实测与框架迭代闭环</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="connection pending" id="codexStatus"><i></i>正在连接 Runner</span>
+      <a class="header-link" href="/reference/demo" target="_blank"><i data-lucide="external-link" aria-hidden="true"></i>原 Demo</a>
+      <a class="header-link" href="/reference/manual" target="_blank"><i data-lucide="book-open" aria-hidden="true"></i>实施手册</a>
+      <button class="button ghost" id="refreshButton" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i>刷新</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="topline">
+      <p>每个环节保留输入、处理和产物；固定 Runner 负责真实取数，Codex 只复核不确定语义。</p>
+      <div>
+        <button class="button secondary" id="openLatestButton" type="button"><i data-lucide="history" aria-hidden="true"></i>查看最近结果</button>
+        <button class="button ghost" id="exportButton" type="button"><i data-lucide="download" aria-hidden="true"></i>导出当前结果</button>
+      </div>
+    </div>
+
+    <nav class="stepper" id="stepper" aria-label="评测闭环"></nav>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="eyebrow" id="stageEyebrow"></span>
+          <h2 id="stageTitle"></h2>
+          <p id="stageDescription"></p>
+        </div>
+        <div class="output-tag" id="stageOutput"></div>
+      </div>
+      <div class="stage-body" id="stageBody"></div>
+      <div class="stage-footer">
+        <div class="handoff" id="handoff"></div>
+        <button class="button secondary" id="previousButton" type="button"><i data-lucide="arrow-left" aria-hidden="true"></i>上一环节</button>
+        <button class="button primary" id="nextButton" type="button">下一环节<i data-lucide="arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="candidateDialog">
+    <form id="candidateForm">
+      <div class="dialog-head">
+        <div><span class="eyebrow">CANDIDATE RECORD</span><h3>补录竞品候选</h3></div>
+        <button class="icon-button" data-close-dialog="candidateDialog" type="button" aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-grid two">
+          <label>Skill 名称<input name="skill_name" required placeholder="例如：Example Finance Skill"></label>
+          <label>提供方<input name="provider" required placeholder="公司、组织或个人"></label>
+          <label>发现渠道
+            <select name="discovery_channel">
+              <option>MCP / 插件市场</option>
+              <option>官方网站</option>
+              <option>公开代码仓库</option>
+              <option>全网检索</option>
+              <option>人工补录</option>
+            </select>
+          </label>
+          <label>版本<input name="version" value="unknown"></label>
+          <label class="wide">原始 URL<input name="source_url" placeholder="https://..."></label>
+          <label class="wide">工程文件 / 仓库<input name="artifact_uri" placeholder="本地路径或仓库地址"></label>
+          <label>认证方式<input name="auth_mode" placeholder="API Key / 扫码 / 本地登录"></label>
+          <label>额度与限频<input name="quota" placeholder="例如：1000次/日"></label>
+          <label>市场相关性（0–100）<input name="market_score" type="number" min="0" max="100" value="80"></label>
+          <label>热度（0–100）<input name="popularity_score" type="number" min="0" max="100" value="60"></label>
+          <label>关键词命中（0–100）<input name="keyword_score" type="number" min="0" max="100" value="80"></label>
+          <label>平台背书（0–100）<input name="platform_score" type="number" min="0" max="100" value="60"></label>
+          <label class="wide">具体入选理由<textarea name="inclusion_reason" rows="3" required placeholder="说明市场、热度、能力和来源证据，不能只写“比较好”。"></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button ghost" data-close-dialog="candidateDialog" type="button">取消</button>
+        <button class="button primary" type="submit">加入候选池</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="queryDialog">
+    <form id="queryForm">
+      <div class="dialog-head">
+        <div><span class="eyebrow">QUERY CASE</span><h3 id="queryDialogTitle">新增 Query</h3></div>
+        <button class="icon-button" data-close-dialog="queryDialog" type="button" aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="dialog-body">
+        <input name="editing_query_id" type="hidden">
+        <div class="form-grid two">
+          <label>Query ID<input name="query_id" placeholder="留空则自动生成"></label>
+          <label>数据格时间 ID<input name="data_grid_time_id" placeholder="例如：G0001"></label>
+          <label>资产类别<input name="asset_category" required placeholder="例如：股票-A股"></label>
+          <label>时间深度
+            <select name="time_depth">
+              <option>最新/实时</option>
+              <option>1年内</option>
+              <option>5年前</option>
+              <option>1周内</option>
+              <option>静态</option>
+            </select>
+          </label>
+          <label>一级数据块<input name="block_l1" required placeholder="例如：财务信息"></label>
+          <label>二级数据块<input name="block_l2" required placeholder="例如：财报附注"></label>
+          <label class="wide">原子 Query<textarea name="query" rows="4" required></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button ghost" data-close-dialog="queryDialog" type="button">取消</button>
+        <button class="button primary" type="submit">保存 Query</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="frameworkDialog">
+    <form id="frameworkForm">
+      <div class="dialog-head">
+        <div><span class="eyebrow">FRAMEWORK CANDIDATE</span><h3>新增框架候选</h3></div>
+        <button class="icon-button" data-close-dialog="frameworkDialog" type="button" aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-grid">
+          <label>候选类型
+            <select name="item_type"><option>新数据块</option><option>新字段</option></select>
+          </label>
+          <label>名称<input name="name" required placeholder="数据块或字段名称"></label>
+          <label>来源 Query<input name="source_query_id" placeholder="可选"></label>
+          <label class="wide">证据<textarea name="evidence" rows="4" required placeholder="说明来自哪个 Skill、接口或 raw_output。"></textarea></label>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button ghost" data-close-dialog="frameworkDialog" type="button">取消</button>
+        <button class="button primary" type="submit">加入候选池</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="resultDialog" class="wide-dialog">
+    <div class="dialog-head">
+      <div><span class="eyebrow">RAW EVIDENCE</span><h3 id="resultDialogTitle">Query 证据</h3></div>
+      <button class="icon-button" data-close-dialog="resultDialog" type="button" aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+    </div>
+    <div class="dialog-body" id="resultDialogBody"></div>
+  </dialog>
+
+  <dialog id="feedbackDialog">
+    <form id="feedbackForm">
+      <div class="dialog-head">
+        <div><span class="eyebrow">HUMAN REVIEW</span><h3>补充人工验收意见</h3></div>
+        <button class="icon-button" data-close-dialog="feedbackDialog" type="button" aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="dialog-body">
+        <input name="query_id" type="hidden">
+        <div class="form-grid">
+          <label>修正判定
+            <select name="corrected_verdict"><option value="">不修改</option><option>✓</option><option>▲</option><option>✗</option><option>待测</option></select>
+          </label>
+          <label>分类
+            <select name="category"><option value="judgment">验收判定</option><option value="routing">接口路由</option><option value="parser">字段解析</option><option value="query">Query设计</option></select>
+          </label>
+          <label class="wide">人工意见<textarea name="note" rows="4" required></textarea></label>
+          <label class="wide">建议动作<input name="suggested_action" placeholder="例如：新增ESG强语义门禁"></label>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="button ghost" data-close-dialog="feedbackDialog" type="button">取消</button>
+        <button class="button primary" type="submit">保存反馈</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input id="queryFileInput" type="file" accept=".csv,.json,.xlsx,.xlsm" hidden>
+  <div class="toast" id="toast"></div>
+  <script src="./offline-adapter.js"></script>
+  <script src="./app.js"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js"></script>
+  <script>window.addEventListener('load', () => window.lucide?.createIcons({ attrs: { 'stroke-width': 1.8 } }));</script>
+</body>
+</html>

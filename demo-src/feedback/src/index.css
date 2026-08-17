@@ -1,0 +1,65 @@
+/* Public demo polish: a compact, high-contrast triage workspace. */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a111b;
+  --surface: #101a27;
+  --surface-raised: #142131;
+  --surface-elevated: #18283a;
+  --border: #24364a;
+  --border-strong: #35516a;
+  --text: #edf5fb;
+  --text-muted: #8ca0b5;
+  --accent: #2388ea;
+  --accent-light: #6bbcff;
+  --accent-soft: rgba(35, 136, 234, .14);
+  --red: #f26b73;
+  --orange: #ef9a4d;
+  --yellow: #e6bd62;
+  --green: #43c49b;
+  --blue: #55a7f5;
+  --radius: 8px;
+  --shadow-panel: 0 18px 44px rgba(1, 8, 18, .28), 0 2px 8px rgba(1, 8, 18, .24);
+  --font-ui: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'DM Mono', 'SFMono-Regular', Consolas, monospace;
+}
+
+html, body, #root { min-height: 100%; }
+
+body {
+  min-width: 0;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(107, 188, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(107, 188, 255, .035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+a { color: var(--accent-light); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:where(button, input, select):focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { border: 2px solid var(--bg); background: var(--border-strong); border-radius: 999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
