@@ -29,7 +29,7 @@ const OriginalDemoFrame = ({ src, title, showLoadingNotice }: OriginalDemoFrameP
       {showLoadingNotice && !loaded && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#f4f1eb] px-6 text-center" role="status" aria-live="polite">
           <p className="text-lg text-black">正在加载 FinClaw 前端</p>
-          <p className="mt-2 text-sm leading-relaxed text-black/60">首次打开约需 10 秒，请稍候。</p>
+          <p className="mt-2 text-sm leading-relaxed text-black/60">首次打开约需 10–30 秒，请稍候。</p>
         </div>
       )}
     </div>
@@ -55,7 +55,7 @@ const originalDemoSources: Record<ProjectId, { src: string; source: string; note
   'web-forge': {
     src: demoPath('web-forge'),
     source: 'FinClaw 前端复刻 Skill',
-    note: '保留原项目的交互与本地脱敏样例。首次加载约需 10 秒，请稍候。',
+    note: '保留原项目的交互与本地脱敏样例。首次加载约需 10–30 秒，请稍候。',
   },
 };
 
