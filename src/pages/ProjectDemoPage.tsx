@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CaseNarrative } from '../components/CaseNarrative';
 import { PortfolioFooter } from '../components/PortfolioFooter';
@@ -6,7 +7,34 @@ import type { ProjectId } from '../types';
 
 type ProjectDemoPageProps = { projectId: ProjectId };
 
+type OriginalDemoFrameProps = {
+  src: string;
+  title: string;
+  showLoadingNotice: boolean;
+};
+
 const demoPath = (name: string) => new URL(`demos/${name}/`, window.location.href).toString();
+
+const OriginalDemoFrame = ({ src, title, showLoadingNotice }: OriginalDemoFrameProps) => {
+  const [loaded, setLoaded] = useState(!showLoadingNotice);
+
+  return (
+    <div className="relative overflow-hidden border border-black/20 bg-white">
+      <iframe
+        className="block h-[760px] w-full border-0 bg-white md:h-[820px]"
+        src={src}
+        title={title}
+        onLoad={() => setLoaded(true)}
+      />
+      {showLoadingNotice && !loaded && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#f4f1eb] px-6 text-center" role="status" aria-live="polite">
+          <p className="text-lg text-black">正在加载 FinClaw 前端</p>
+          <p className="mt-2 text-sm leading-relaxed text-black/60">首次打开约需 10 秒，请稍候。</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const originalDemoSources: Record<ProjectId, { src: string; source: string; note: string }> = {
   wiki: {
@@ -27,7 +55,7 @@ const originalDemoSources: Record<ProjectId, { src: string; source: string; note
   'web-forge': {
     src: demoPath('web-forge'),
     source: 'FinClaw 前端复刻 Skill',
-    note: '保留原项目的交互与本地脱敏样例，用于面试时展示产品逻辑和实现细节。',
+    note: '保留原项目的交互与本地脱敏样例。首次加载约需 10 秒，请稍候。',
   },
 };
 
@@ -75,9 +103,12 @@ export const ProjectDemoPage = ({ projectId }: ProjectDemoPageProps) => {
               </div>
               <p className="max-w-md text-sm leading-relaxed text-black/60">{demo.note}</p>
             </div>
-            <div className="overflow-hidden border border-black/20 bg-white">
-              <iframe key={demo.src} className="block h-[760px] w-full border-0 bg-white md:h-[820px]" src={demo.src} title={`${project.title} 原项目演示`} />
-            </div>
+            <OriginalDemoFrame
+              key={demo.src}
+              src={demo.src}
+              title={`${project.title} 原项目演示`}
+              showLoadingNotice={projectId === 'web-forge'}
+            />
             <div className="mt-8 flex justify-end">
               <Link
                 to={nextProject.route}

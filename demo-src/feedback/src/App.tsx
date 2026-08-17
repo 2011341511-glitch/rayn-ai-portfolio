@@ -23,6 +23,7 @@ export default function App() {
         <NavItem label="热度榜" icon={Activity} active={page === 'hot'} onClick={() => setPage('hot')} />
         <NavItem label="反馈明细" icon={ListFilter} active={page === 'items'} onClick={() => setPage('items')} />
         <div className={styles.navFooter}>
+          <span className={styles.apiLink}>文字 · 截图 · PDF · Word</span>
           <span className={styles.apiLink}><i aria-hidden="true" />公开版 · 本地脱敏样例</span>
         </div>
       </nav>

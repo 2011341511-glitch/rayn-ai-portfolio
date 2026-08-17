@@ -98,8 +98,8 @@ export const projects: ProjectCase[] = [
     title: '多模态用户反馈归因 Agent',
     summary: '把分散的文字与截图反馈转化为可分诊、可统计、可追溯的问题池。',
     problem: '投研产品反馈散落在聊天与人工转发记录中，问题热度无法汇总，人工归类成本高。',
-    workflow: ['接收文字或截图', '消息切片与解析', 'LLM 五类归因', '结构化入库与人工分诊'],
-    outcomes: ['跑通文本与截图的解析、分类、入库与 Dashboard 展示', '完成公众号、企微机器人、自建应用等 5 类渠道能力验证', '明确合并转发受平台隐私限制，收敛到文本粘贴与截图解析方案'],
+    workflow: ['接收文字、截图、PDF 或 Word', '消息切片与文件解析', 'LLM 五类归因', '结构化入库与人工分诊'],
+    outcomes: ['跑通文字、截图、PDF 与 Word 的解析、分类、入库与 Dashboard 展示', '完成公众号、企微机器人、自建应用等 5 类渠道能力验证', '明确合并转发受平台隐私限制，收敛到文字、截图与文件解析方案'],
     metrics: [
       { value: '5', label: '反馈标签' },
       { value: '3', label: '消息切片路径' },
@@ -109,7 +109,7 @@ export const projects: ProjectCase[] = [
     tags: ['Multimodal', 'FastAPI', 'LLM Classifier', 'Dashboard'],
     scenario: {
       title: '从聊天记录到分诊看板',
-      description: '粘贴一段脱敏聊天内容，体验切片、标签归因和人工处理状态更新。',
+      description: '选择脱敏文字、截图或 PDF/Word 文件，体验切片、标签归因和人工处理状态更新。',
       steps: [
         { title: '识别消息', detail: '解析发言人、时间与多条反馈' },
         { title: '逐条归因', detail: '映射到可用性、效果、性能、体验或认可' },
