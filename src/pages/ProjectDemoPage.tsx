@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CaseNarrative } from '../components/CaseNarrative';
 import { PortfolioFooter } from '../components/PortfolioFooter';
@@ -17,10 +17,33 @@ const demoPath = (name: string) => new URL(`demos/${name}/`, window.location.hre
 
 const OriginalDemoFrame = ({ src, title, showLoadingNotice }: OriginalDemoFrameProps) => {
   const [loaded, setLoaded] = useState(!showLoadingNotice);
+  const [loadingDelayed, setLoadingDelayed] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (!showLoadingNotice || loaded) return;
+
+    const isIframeReady = () => {
+      if (iframeRef.current?.contentDocument?.readyState !== 'complete') return false;
+      setLoaded(true);
+      return true;
+    };
+
+    if (isIframeReady()) return;
+
+    const readinessPoll = window.setInterval(isIframeReady, 300);
+    const delayedTimer = window.setTimeout(() => setLoadingDelayed(true), 10_000);
+
+    return () => {
+      window.clearInterval(readinessPoll);
+      window.clearTimeout(delayedTimer);
+    };
+  }, [loaded, showLoadingNotice]);
 
   return (
     <div className="relative overflow-hidden border border-black/20 bg-white">
       <iframe
+        ref={iframeRef}
         className="block h-[760px] w-full border-0 bg-white md:h-[820px]"
         src={src}
         title={title}
@@ -30,6 +53,15 @@ const OriginalDemoFrame = ({ src, title, showLoadingNotice }: OriginalDemoFrameP
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#f4f1eb] px-6 text-center" role="status" aria-live="polite">
           <p className="text-lg text-black">正在加载 FinClaw 前端</p>
           <p className="mt-2 text-sm leading-relaxed text-black/60">首次打开约需 10–30 秒，请稍候。</p>
+          {loadingDelayed && (
+            <button
+              type="button"
+              className="mt-5 border-b border-black pb-1 text-sm text-black transition-opacity hover:opacity-60"
+              onClick={() => setLoaded(true)}
+            >
+              直接查看原始界面
+            </button>
+          )}
         </div>
       )}
     </div>
