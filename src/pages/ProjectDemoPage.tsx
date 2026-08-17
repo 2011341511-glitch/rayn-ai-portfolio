@@ -27,7 +27,7 @@ const originalDemoSources: Record<ProjectId, { src: string; source: string; note
   'web-forge': {
     src: demoPath('web-forge'),
     source: 'FinClaw 前端复刻 Skill',
-    note: '保留原项目的交互与本地脱敏样例，用于面试时展示产品逻辑和实现细节。',
+    note: 'FinClaw 前端 Demo 附件较多，打开约需 20-30 秒；如出现乱码，请稍作等待。',
   },
 };
 
