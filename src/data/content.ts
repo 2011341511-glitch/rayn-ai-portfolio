@@ -37,11 +37,11 @@ export const projects: ProjectCase[] = [
     outcomes: ['支持 PDF、链接、文本与 Agent 对话四类素材摄入', '沉淀 15 类实体、8 类关系与 4 类知识变更', '完成知识图谱、冲突检测与人工确认闭环'],
     metrics: [
       { value: '3', label: '层知识架构' },
-      { value: '15', label: '类实体口径' },
-      { value: '8', label: '类关系' },
-      { value: '21', label: '前端 API 方法' },
+      { value: '12', label: '公开脱敏材料' },
+      { value: '4', label: '主题 Wiki' },
+      { value: '5', label: '待确认变更' },
     ],
-    tags: ['RawMaterial', 'WikiTopic', 'PendingChange', 'Knowledge Graph'],
+    tags: ['原始材料', '主题 Wiki', '待确认变更', '知识图谱'],
     scenario: {
       title: '材料入库与变更审批',
       description: '选择一份脱敏材料，观察知识如何被解析、关联并进入待确认变更池。',
